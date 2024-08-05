@@ -32,9 +32,9 @@
             particles = [];
             maxFireworks = window.innerWidth / 192;
             function getRandomColor() {
-                r = Math.floor(Math.random() * 127) + 128;
-                g = Math.floor(Math.random() * 127) + 128;
-                b = Math.floor(Math.random() * 127) + 128;
+                r = Math.floor(Math.random() * 256);
+                g = Math.floor(Math.random() * 256);
+                b = Math.floor(Math.random() * 256);
                 return "rgb(" + r + ", " + g + ", " + b + ")";
             }
             function launchFirework() {
@@ -54,7 +54,8 @@
                     energy = Math.floor(Math.random() * 10000) / 5000;
                     xEnergy = (energy * Math.cos(angle));
                     yEnergy = (energy * Math.sin(angle));
-                    particle = {"x": firework.x, "y": firework.y, "xSpeed": xEnergy, "ySpeed": yEnergy, "life": Math.floor(Math.random() * 240) + 120, "radius": radius, "color": color};
+                    life = Math.floor(Math.random() * 240) + 120;
+                    particle = {"x": firework.x, "y": firework.y, "xSpeed": xEnergy, "ySpeed": yEnergy, "life": life, "initialLife": life, "radius": radius, "color": color};
                     particles.push(particle);
                 }
             }
@@ -108,7 +109,7 @@
 
                     // Draw
                     ctx.save();
-                    ctx.globalAlpha = particle.life / 360;
+                    ctx.globalAlpha = particle.life / particle.initialLife;
                     ctx.beginPath();
                     ctx.arc(particle.x, particle.y, particle.radius, 0, 2 * Math.PI);
                     ctx.fillStyle = particle.color;
