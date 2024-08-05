@@ -30,19 +30,17 @@
             ctx = canvas.getContext("2d");
             fireworks = [];
             particles = [];
+            maxFireworks = window.innerWidth / 192;
             function getRandomColor() {
                 r = Math.floor(Math.random() * 127) + 128;
                 g = Math.floor(Math.random() * 127) + 128;
                 b = Math.floor(Math.random() * 127) + 128;
-                return "rgb(" + r + ", " + g + ", " + b + ")"
+                return "rgb(" + r + ", " + g + ", " + b + ")";
             }
             function launchFirework() {
                 radius = 1;
-                firework = {"x": Math.floor(Math.random() * canvas.width), "y": canvas.height + radius, "radius": radius, "speed": (Math.floor(Math.random() * 30) / 10) + 1}
+                firework = {"x": Math.floor(Math.random() * canvas.width), "y": canvas.height + radius, "radius": radius, "speed": (Math.floor(Math.random() * (window.innerHeight / 36)) / 10) + 1}
                 fireworks.push(firework);
-                if(fireworks.length <= 30) {
-                    window.setTimeout(launchFirework, Math.floor(Math.random() * 1000));
-                }
             }
             function createExplosion(firework) {
                 color = getRandomColor();
@@ -51,12 +49,12 @@
                     if(randomColor) {
                         color = getRandomColor();
                     }
-                    radius = 2;
+                    radius = Math.random() * 2;
                     angle = Math.random() * 2 * Math.PI;
                     energy = Math.floor(Math.random() * 10000) / 5000;
                     xEnergy = (energy * Math.cos(angle));
                     yEnergy = (energy * Math.sin(angle));
-                    particle = {"x": firework.x, "y": firework.y, "xSpeed": xEnergy, "ySpeed": yEnergy, "halflife": Math.floor(Math.random() * 360) + 120, "radius": radius, "color": color};
+                    particle = {"x": firework.x, "y": firework.y, "xSpeed": xEnergy, "ySpeed": yEnergy, "life": Math.floor(Math.random() * 240) + 120, "radius": radius, "color": color};
                     particles.push(particle);
                 }
             }
@@ -110,22 +108,27 @@
 
                     // Draw
                     ctx.save();
-                    ctx.globalAlpha = particle.halflife / 360;
+                    ctx.globalAlpha = particle.life / 360;
                     ctx.beginPath();
                     ctx.arc(particle.x, particle.y, particle.radius, 0, 2 * Math.PI);
                     ctx.fillStyle = particle.color;
                     ctx.fill();
                     ctx.restore();
 
-                    particle.halflife -= 1;
+                    particle.life -= 1;
 
-                    if(particle.halflife <= 0) {
+                    if(particle.life <= 0) {
                         particles = particles.filter(function(p) { return p != particle; });
                     }
                 });
             }
+            function launchFireworks() {
+                if(fireworks.length < maxFireworks) {
+                    launchFirework();
+                }
+            }
             window.setInterval(tick, 1000 / 120);
-            launchFirework();
+            window.setInterval(launchFireworks, 10);
         </script>
     </body>
 </html>
