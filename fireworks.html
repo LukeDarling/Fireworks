@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
             html, body {
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -130,6 +131,25 @@
             }
             window.setInterval(tick, 1000 / 120);
             window.setInterval(launchFireworks, 10);
+
+            lastClick = 0;
+            canvas.addEventListener("click", function(event) {
+                if(lastClick + 1000 < Date.now()) {
+                    x = event.pageX - canvas.offsetLeft + canvas.clientLeft;
+                    y = event.pageY - canvas.offsetTop + canvas.clientTop;
+                    createExplosion({"x": x, "y": y});
+                    lastClick = Date.now();
+                }
+            }, false);
+            canvas.addEventListener("touchend", function(event) {
+                if(lastClick + 1000 < Date.now()) {
+                    x = event.pageX - canvas.offsetLeft + canvas.clientLeft;
+                    y = event.pageY - canvas.offsetTop + canvas.clientTop;
+                    createExplosion({"x": x, "y": y});
+                    lastClick = Date.now();
+                }
+            }, false);
+
         </script>
     </body>
 </html>
