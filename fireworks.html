@@ -31,7 +31,7 @@
             ctx = canvas.getContext("2d");
             fireworks = [];
             particles = [];
-            maxFireworks = window.innerWidth / 192;
+            maxFireworks = Math.max(window.innerWidth / 192, 5);
             function getRandomColor() {
                 r = Math.floor(Math.random() * 256);
                 g = Math.floor(Math.random() * 256);
@@ -40,22 +40,31 @@
             }
             function launchFirework() {
                 radius = 1;
-                firework = {"x": Math.floor(Math.random() * canvas.width), "y": canvas.height + radius, "radius": radius, "speed": (Math.floor(Math.random() * (window.innerHeight / 36)) / 10) + 1}
+                firework = {"x": Math.floor(Math.random() * canvas.width), "y": canvas.height + radius, "radius": radius, "speed": (Math.floor(Math.random() * (window.innerHeight / 18)) / 10) + 1.25}
                 fireworks.push(firework);
             }
             function createExplosion(firework) {
-                color = getRandomColor();
-                randomColor = Math.floor(Math.random() * 10) == 0;
-                for(i = 0; i < 1000; i++) {
-                    if(randomColor) {
+                type = Math.floor(Math.random() * 10)
+                color1 = getRandomColor();
+                color2 = getRandomColor();
+                color3 = getRandomColor();
+                particleCount = Math.floor(Math.random() * 250) + 750;
+                for(i = 0; i < particleCount; i++) {
+                    if(type == 0) {
                         color = getRandomColor();
+                    } else if(type == 1) {
+                        color = [color1, color2][Math.floor(Math.random() * 2)];
+                    } else if(type == 2) {
+                        color = [color1, color2, color3][Math.floor(Math.random() * 3)];
+                    } else {
+                        color = color1;
                     }
                     radius = Math.random() * 2;
                     angle = Math.random() * 2 * Math.PI;
-                    energy = Math.floor(Math.random() * 10000) / 5000;
+                    energy = Math.floor(Math.random() * 20000) / 10000;
                     xEnergy = (energy * Math.cos(angle));
                     yEnergy = (energy * Math.sin(angle));
-                    life = Math.floor(Math.random() * 240) + 120;
+                    life = Math.floor(Math.random() * 180);
                     particle = {"x": firework.x, "y": firework.y, "xSpeed": xEnergy, "ySpeed": yEnergy, "life": life, "initialLife": life, "radius": radius, "color": color};
                     particles.push(particle);
                 }
@@ -69,7 +78,7 @@
 
                     // Apply gravity
                     if(firework.speed > 0) {
-                        firework.speed -= 0.01;
+                        firework.speed -= 0.02;
                     }
 
                     // Move
@@ -101,8 +110,9 @@
 
                 // Loop through particles
                 particles.forEach(function(particle) {
+
                     // Apply gravity
-                    particle.ySpeed += 0.01;
+                    particle.ySpeed += 0.02;
 
                     // Move
                     particle.x += particle.xSpeed;
@@ -129,20 +139,13 @@
                     launchFirework();
                 }
             }
-            window.setInterval(tick, 1000 / 120);
-            window.setInterval(launchFireworks, 10);
+            window.setInterval(tick, 1000 / 60);
+            window.setInterval(launchFireworks, 100);
 
             lastClick = 0;
-            canvas.addEventListener("click", function(event) {
-                if(lastClick + 1000 < Date.now()) {
-                    x = event.pageX - canvas.offsetLeft + canvas.clientLeft;
-                    y = event.pageY - canvas.offsetTop + canvas.clientTop;
-                    createExplosion({"x": x, "y": y});
-                    lastClick = Date.now();
-                }
-            }, false);
-            canvas.addEventListener("touchend", function(event) {
-                if(lastClick + 1000 < Date.now()) {
+            clickIntervalMax = 250;
+            canvas.addEventListener("mousedown", function(event) {
+                if(lastClick + clickIntervalMax < Date.now()) {
                     x = event.pageX - canvas.offsetLeft + canvas.clientLeft;
                     y = event.pageY - canvas.offsetTop + canvas.clientTop;
                     createExplosion({"x": x, "y": y});
